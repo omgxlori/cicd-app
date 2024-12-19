@@ -1,4 +1,5 @@
 import express from 'express';
+import { fileURLToPath } from 'url';
 import path from 'path'; // Import path for file resolution
 
 import db from './config/connection.js';
@@ -8,6 +9,10 @@ await db();
 
 const PORT = process.env.PORT || 3001; // Use the environment's PORT or 3001 for local
 const app = express();
+
+// Define __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
