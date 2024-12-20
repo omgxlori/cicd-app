@@ -1,19 +1,23 @@
-import db from '../config/connection.js';
-import { Word } from '../models/index.js';
-import cleanDB from './cleanDB.js';
-
+import mongoose from 'mongoose';
+import Word from '../models/Word.js';
 import wordData from './wordSeeds.json' assert { type: 'json' };
 
-try {
-  await db();
-  await cleanDB();
+(async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
 
-  // bulk create each model
-  await Word.insertMany(wordData);
+    console.log('🌱 Connected to the database. Seeding data...');
 
-  console.log('Seeding completed successfully!');
-  process.exit(0);
-} catch (error) {
-  console.error('Error seeding database:', error);
-  process.exit(1);
-}
+    await Word.deleteMany({});
+    await Word.insertMany(wordData);
+
+    console.log('✅ Seeding complete!');
+    mongoose.connection.close();
+  } catch (error) {
+    console.error('❌ Seeding error:', error);
+    mongoose.connection.close();
+  }
+})();
