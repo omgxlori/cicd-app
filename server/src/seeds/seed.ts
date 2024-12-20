@@ -1,23 +1,25 @@
-import mongoose from 'mongoose';
-import Word from '../models/Word.js';
-import wordData from './wordSeeds.json' assert { type: 'json' };
+import db from '../config/connection.js';
+import { Word } from '../models/index.js';
+import cleanDB from './cleanDB.js';
+
+// Load word data
+import wordData from './wordSeeds.json'; // Ensure resolveJsonModule is enabled in tsconfig.json
 
 (async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    console.log('🌱 Connecting to the database...');
+    await db();
 
-    console.log('🌱 Connected to the database. Seeding data...');
+    console.log('🧹 Cleaning up the database...');
+    await cleanDB();
 
-    await Word.deleteMany({});
+    console.log('📦 Inserting word data...');
     await Word.insertMany(wordData);
 
-    console.log('✅ Seeding complete!');
-    mongoose.connection.close();
+    console.log('✅ Seeding completed successfully!');
+    process.exit(0);
   } catch (error) {
-    console.error('❌ Seeding error:', error);
-    mongoose.connection.close();
+    console.error('❌ Error seeding database:', error);
+    process.exit(1);
   }
 })();
