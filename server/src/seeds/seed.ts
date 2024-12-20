@@ -1,9 +1,13 @@
+import fs from 'fs';
+import path from 'path';
+
 import db from '../config/connection.js';
 import { Word } from '../models/index.js';
 import cleanDB from './cleanDB.js';
 
-// Load word data
-import wordData from './wordSeeds.json'; // Ensure resolveJsonModule is enabled in tsconfig.json
+// Dynamically load the wordSeeds.json file using fs
+const wordDataPath = path.resolve('src/seeds/wordSeeds.json');
+const wordData = JSON.parse(fs.readFileSync(wordDataPath, 'utf-8'));
 
 (async () => {
   try {
